@@ -108,6 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
     renderFavorites();
     setupEventListeners();
+
+    const toggleButton = document.getElementById('nav-toggle-btn');
+    const navItems = document.getElementById('nav-items');
+    const navLinks = document.querySelectorAll('#nav-items a');
+
+    toggleButton.addEventListener('click', handleToggleMenu);
+    navLinks.forEach(link => link.addEventListener('click', handleCloseMenu));
 });
 
 function showCart() {
@@ -140,7 +147,7 @@ function renderCartDetails() {
     const cartElements = recipeCategories.filter((recipe) => {
         return cartItemIds.includes(recipe.id);
     });
-    
+
     const markup = cartElements.map((recipe) => {
         return `<div class="my-cart-item-accoridian">
             <div class="accordion-head">
@@ -167,6 +174,7 @@ function renderCartDetails() {
                 </div>
                 <div class="accordion-body-right">
                     <img src=${recipe.recipeImg} alt="">
+                    <button data-recipe-id=${recipe.id}>Remove</button>
                 </div>
             </div>
         </div>`;
@@ -174,20 +182,45 @@ function renderCartDetails() {
 
     const cartContainer = document.querySelector(".my-cart-details");
     cartContainer && (cartContainer.innerHTML = markup);
+
+    
+    const removeButtons = document.querySelectorAll('.accordion-body-right button');
+    removeButtons.forEach((button) => {
+        button.addEventListener('click', function() {
+            const itemId = Number(button.getAttribute('data-recipe-id'));
+            
+            
+            removeItemFromCart(itemId);
+        });
+    });
 }
+
+function removeItemFromCart(itemId) {
+
+    let cartItemIds = JSON.parse(localStorage.getItem("cartItems")) || [];
+    
+    
+    cartItemIds = cartItemIds.filter((id) => id !== itemId);
+   
+    
+    localStorage.setItem("cartItems", JSON.stringify(cartItemIds));
+    renderCartDetails();
+    attachAccordionListeners()
+}
+
 
 let currentPage = 1;
 const itemsPerPage = 3;
 
-function renderRecipes(recipeCategories) {
-    const totalItems = recipeCategories.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
+function renderRecipes(filteredCategories) {
+    const totalItems = filteredCategories.length;//9
+    const totalPages = Math.ceil(totalItems / itemsPerPage);//3
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    const startIndex = (currentPage - 1) * itemsPerPage;//0
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);//3
 
-    const itemsToDisplay = recipeCategories.slice(startIndex, endIndex);
-    
+    const itemsToDisplay = filteredCategories.slice(startIndex, endIndex);
+
     let markup = itemsToDisplay.map((recipe) => {
         return `<div class="item-card">
                     <div class="card-header">
@@ -217,11 +250,12 @@ function renderRecipes(recipeCategories) {
     const recipeContainer = document.querySelector(".cards-container");
     recipeContainer && (recipeContainer.innerHTML = markup);
 
-    renderPagination(totalPages);
+    renderPagination(totalPages, filteredCategories); // Pass the filtered list to renderPagination
     attachAddToCartListeners();
 }
 
-function renderPagination(totalPages) {
+
+function renderPagination(totalPages, filteredCategories) {
     const prevButton = document.querySelector(".prev-btn");
     const nextButton = document.querySelector(".next-btn");
 
@@ -231,17 +265,19 @@ function renderPagination(totalPages) {
     prevButton.onclick = () => {
         if (currentPage > 1) {
             currentPage--;
-            renderRecipes(recipeCategories);
+            renderRecipes(filteredCategories); // Re-render with updated page
         }
     };
 
     nextButton.onclick = () => {
         if (currentPage < totalPages) {
             currentPage++;
-            renderRecipes(recipeCategories);
+            renderRecipes(filteredCategories); // Re-render with updated page
         }
     };
 }
+
+
 
 renderRecipes(recipeCategories);
 
@@ -282,7 +318,7 @@ function attachFavIconListeners() {
                 icon.classList.replace("bi-heart-fill", "bi-heart");
                 favorites = favorites.filter(fav => fav.id !== recipeId);
             }
-            
+
             localStorage.setItem("favorites", JSON.stringify(favorites));
             updateFavoritesCount();
             renderFavorites();
@@ -308,15 +344,19 @@ function renderFavorites() {
 }
 
 function toggleFavoritesDropdown(favoritesButton) {
-    const rect = favoritesButton.getBoundingClientRect();
     
+    const rect = favoritesButton.getBoundingClientRect();
+
     if (favoritesDropdown.style.display === 'block') {
         favoritesDropdown.style.display = 'none';
     } else {
+      
+        
         favoritesDropdown.style.display = 'block';
         favoritesDropdown.style.position = 'absolute';
         favoritesDropdown.style.top = `${rect.bottom}px`;
         favoritesDropdown.style.left = `${rect.left}px`;
+        favoritesDropdown.style.width = `${rect.width}px`;
     }
 }
 
@@ -372,6 +412,8 @@ function filterRecipes() {
     renderRecipes(filteredRecipes);
 }
 
+
+
 // Search input Filter
 function filterSerach(e) {
     const searchData = document.getElementById("search-content-item").value.toLowerCase().trim();
@@ -384,7 +426,7 @@ function filterSerach(e) {
 
 function searchDebounceFilter(cb, delay) {
     let timer;
-    return function(...args) {
+    return function (...args) {
         const context = this;
         clearTimeout(timer);
         timer = setTimeout(() => {
@@ -402,8 +444,8 @@ document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(checkbox =>
 searchRecipeInput?.addEventListener("keyup", enhanceSearchFilter);
 
 function attachAccordionListeners() {
-    const accordionButtons = document.querySelectorAll('.accordion-head button');
-    
+    const accordionButtons = document.querySelectorAll('.accordion-head ');
+
     accordionButtons.forEach(button => {
         button.addEventListener('click', () => {
             const accordionBody = button.closest('.accordion-head').nextElementSibling;
@@ -411,4 +453,60 @@ function attachAccordionListeners() {
             accordionBody.classList.toggle('open');
         });
     });
+}
+
+
+// Responsive ness
+
+
+function handleToggleMenu(e) {
+    e.preventDefault();
+    const navItems = document.getElementById('nav-items');
+    if (window.innerWidth <= 700) {
+        navItems.style.display = (navItems.style.display === 'flex') ? 'none' : 'flex';
+    }
+}
+
+function handleCloseMenu() {
+    const navItems = document.getElementById('nav-items');
+    if (window.innerWidth <= 700) {
+        navItems.style.display = 'none';
+    }
+}
+
+const toggleIcon = document.querySelector('.sidebar-toggle-icon');
+const closeIcon = document.querySelector('.sidebar-close-icon');
+const sidebar = document.querySelector('.sidebar');
+
+if (toggleIcon && closeIcon && sidebar) {
+    toggleIcon.addEventListener('click', showSidebar);
+    closeIcon.addEventListener('click', hideSidebar);
+}
+
+function showSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleIcon = document.querySelector('.sidebar-toggle-icon');
+    const closeIcon = document.querySelector('.sidebar-close-icon');
+
+    sidebar.style.display = 'block';
+    setTimeout(() => {
+        sidebar.style.left = '0';
+    }, 10);
+
+    toggleIcon.style.display = 'none';
+    closeIcon.style.display = 'block';
+}
+
+function hideSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleIcon = document.querySelector('.sidebar-toggle-icon');
+    const closeIcon = document.querySelector('.sidebar-close-icon');
+
+    sidebar.style.left = '-70%';
+    setTimeout(() => {
+        sidebar.style.display = 'none';
+    }, 300);
+
+    toggleIcon.style.display = 'block';
+    closeIcon.style.display = 'none';
 }
