@@ -27,11 +27,19 @@
                 <li><a href="#" id="nav-cart-btn"><i class="bi bi-cart"></i> Cart (<span id="cart-count">0</span>)</a>
                 </li>
             </ul>
+
+            <a href="#" id="nav-toggle-btn" class="hamburger-menu"><i class="bi bi-list"></i></a>
         </nav>
     </div>
 
+
     <div class="container">
+        <i class="bi bi-chevron-bar-right sidebar-toggle-icon"></i>
+        <!-- <i class="bi bi-arrow-right-circle  sidebar-toggle-icon"></i> -->
+
+        <!-- Sidebar -->
         <aside class="sidebar">
+            <i class="bi bi-chevron-bar-left sidebar-close-icon"></i>
             <h2 class="sidebar-title">Select Dishes</h2>
             <ul>
                 <li>
@@ -182,36 +190,33 @@
                 </div>
             </header>
             <section class="recipe-Modal" id="recipeModal">
-
                 <div class="recipe-modal-content">
                     <h2>Add New Recipe</h2>
                     <p id="error-add-item"></p>
                     <form>
                         <label for="recipeName">Recipe Name:</label>
                         <input type="text" id="recipeName" name="recipeName" required>
-
-                        <label for="recipeName">Image URL:</label>
+            
+                        <label for="imageURL">Image URL:</label>
                         <input type="text" id="imageURL" name="imageURL" required>
-
-                        <label for="recipeName">Price:</label>
+            
+                        <label for="time">Price:</label>
                         <input type="text" id="time" name="time" required>
-
-                        <label for="recipeName">Rating:</label>
+            
+                        <label for="rating">Rating:</label>
                         <input type="text" id="rating" name="rating" required>
-
-                        <label for="recipeName">Ingredients:</label>
+            
+                        <label for="ingredients">Ingredients:</label>
                         <textarea id="ingredients" name="ingredients" required></textarea>
-
-
-
+            
                         <button type="submit">Submit</button>
                     </form>
                 </div>
-
             </section>
+            
             <div class="pagination">
                 <button class="prev-btn" disabled><i class="bi bi-arrow-left-circle-fill"></i></button>
-                <!-- Dynamic page buttons will be inserted here -->
+
                 <button class="next-btn"><i class="bi bi-arrow-right-circle-fill"></i></button>
             </div>
             <section class="cards-container">
