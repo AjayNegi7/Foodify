@@ -101,6 +101,14 @@ navItems.addEventListener('click', (e) => {
     }
 });
 
+const logoutButton = document.getElementById('nav-loggout-btn');
+console.log(logoutButton);
+
+logoutButton.addEventListener('click', () => {
+    localStorage.removeItem('loggedInUser');
+    window.location.href = 'Login.html';
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     renderRecipes(recipeCategories);
     attachFavIconListeners();
