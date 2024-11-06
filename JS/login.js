@@ -13,7 +13,7 @@ document.getElementById("login-form").addEventListener("submit", function(event)
     if (userData && userData.email === email && userData.password === password) {
         // Successfully logged in
         alert("Login successful!");
-        window.location.href = "home.html"; 
+        window.location.href = "Home.html"; 
     } else {
         alert("Invalid email or password!");
     }
