@@ -1,4 +1,3 @@
-
 document.getElementById("register-form").addEventListener("submit", function(event) {
     event.preventDefault();
 
@@ -7,7 +6,10 @@ document.getElementById("register-form").addEventListener("submit", function(eve
     const password = document.getElementById("password").value;
 
     const userData = { username, email, password };
-    localStorage.setItem("user", JSON.stringify(userData));
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    users.push(userData);
+    localStorage.setItem("users", JSON.stringify(users));
 
     alert("Registration successful! Please login.");
     window.location.href = "Login.html";
