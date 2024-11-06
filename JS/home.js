@@ -121,7 +121,7 @@ function showCart() {
     const sidebar = document.querySelector('.sidebar');
     const content = document.querySelector('.content');
     const cartContainer = document.querySelector('.my-cart-container');
-
+    const cartItems =  JSON.parse(localStorage.getItem("cartItems"))
     if (sidebar) sidebar.style.display = 'none';
     if (content) content.style.display = 'none';
     if (cartContainer) cartContainer.style.display = 'flex';
@@ -198,14 +198,11 @@ function renderCartDetails() {
 function removeItemFromCart(itemId) {
 
     let cartItemIds = JSON.parse(localStorage.getItem("cartItems")) || [];
-    
-    
     cartItemIds = cartItemIds.filter((id) => id !== itemId);
-   
-    
     localStorage.setItem("cartItems", JSON.stringify(cartItemIds));
     renderCartDetails();
-    attachAccordionListeners()
+    attachAccordionListeners();
+    updateCartCount()
 }
 
 
@@ -331,16 +328,19 @@ function updateFavoritesCount() {
 }
 
 function updateCartCount() {
+    const cartItems =  JSON.parse(localStorage.getItem("cartItems"))
     cartElementCount.innerText = cartItems.length;
 }
 
 function renderFavorites() {
+   if(favorites.length>0){
     favoritesDropdown.innerHTML = favorites.map(fav => `
         <div class="favorite-item">
             <img src="${fav.recipeImg}" alt="${fav.recipeName}" class="favorite-img"/>
             <span>${fav.recipeName}</span>
         </div>
     `).join('');
+   }
 }
 
 function toggleFavoritesDropdown(favoritesButton) {
@@ -350,13 +350,14 @@ function toggleFavoritesDropdown(favoritesButton) {
     if (favoritesDropdown.style.display === 'block') {
         favoritesDropdown.style.display = 'none';
     } else {
-      
-        
+        if(favorites?.length>0){
+            
         favoritesDropdown.style.display = 'block';
         favoritesDropdown.style.position = 'absolute';
         favoritesDropdown.style.top = `${rect.bottom}px`;
         favoritesDropdown.style.left = `${rect.left}px`;
         favoritesDropdown.style.width = `${rect.width}px`;
+        }
     }
 }
 
